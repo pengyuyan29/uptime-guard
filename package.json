@@ -1,0 +1,10 @@
+{
+  "name": "uptime-guard",
+  "version": "1.0.0-beta.3",
+  "private": true,
+  "scripts": {
+    "build:dashboard": "npm --prefix dashboard run build",
+    "dev": "npm run build:dashboard && npm --prefix worker run dev",
+    "deploy": "node scripts/deploy-banner.mjs"
+  }
+}
