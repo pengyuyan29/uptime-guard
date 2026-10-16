@@ -48,12 +48,12 @@ export function useStatusAlerts(
     const o = optsRef.current;
     if (downed.length) {
       if (o.sound) playDown();
-      o.say(downed.length === 1 ? `${downed[0].name} ${changePhrase(downed[0], true)}` : `${downed.length} services need attention`);
-      if (o.notify) notify(downed.length === 1 ? `🔴 ${downed[0].name}` : "🔴 Services need attention", downed.length === 1 ? changePhrase(downed[0], true) : downed.map((s) => s.name).join(", "), pathFor(downed));
+      o.say(downed.length === 1 ? `${downed[0].name} ${changePhrase(downed[0], true)}` : `有 ${downed.length} 个服务需要关注`);
+      if (o.notify) notify(downed.length === 1 ? `🔴 ${downed[0].name}` : "🔴 有服务需要关注", downed.length === 1 ? changePhrase(downed[0], true) : downed.map((s) => s.name).join("、"), pathFor(downed));
     } else if (recovered.length) {
       if (o.sound) playUp();
-      o.say(recovered.length === 1 ? `${recovered[0].name} ${changePhrase(recovered[0], false)}` : `${recovered.length} services recovered`);
-      if (o.notify) notify("✅ Recovered", recovered.map((s) => s.name).join(", "), pathFor(recovered));
+      o.say(recovered.length === 1 ? `${recovered[0].name} ${changePhrase(recovered[0], false)}` : `${recovered.length} 个服务已恢复`);
+      if (o.notify) notify("✅ 已恢复", recovered.map((s) => s.name).join("、"), pathFor(recovered));
     }
   }, [services]);
 

@@ -61,20 +61,20 @@ export function Overview({
   const banner = useMemo(() => {
     if (loading || isEmpty || !services) return null;
     if (sum.down > 1) {
-      const names = sorted.filter((s) => statusOf(s) === "down").map((s) => s.name).slice(0, 3).join(", ");
-      return { k: "down" as const, ic: "oct" as const, t: `${sum.down} services are down`, sub: `${names} are failing checks.`, arg: sorted.find((s) => statusOf(s) === "down")?.id };
+      const names = sorted.filter((s) => statusOf(s) === "down").map((s) => s.name).slice(0, 3).join("、");
+      return { k: "down" as const, ic: "oct" as const, t: `${sum.down} 个服务宕机`, sub: `${names} 检查失败。`, arg: sorted.find((s) => statusOf(s) === "down")?.id };
     }
     if (sum.down === 1) {
       const d = sorted.find((s) => statusOf(s) === "down")!;
       const what = changePhrase(d, true);
-      return { k: "down" as const, ic: "oct" as const, t: `${d.name} ${what === "went down" ? "is down" : what}`, sub: `Last checked ${timeAgo(d.last_checked_at)}.`, arg: d.id };
+      return { k: "down" as const, ic: "oct" as const, t: `${d.name} ${what}`, sub: `上次检查于 ${timeAgo(d.last_checked_at)}。`, arg: d.id };
     }
     if (sum.warn > 0) {
       const w = sorted.find((s) => statusOf(s) === "warn")!;
       const d = expiryDays(w);
-      return { k: "warn" as const, ic: "tri" as const, t: `Everything is up · ${sum.warn} warning`, sub: `${w.name}${d != null ? ` expires in ${d} days.` : "."}`, arg: w.id };
+      return { k: "warn" as const, ic: "tri" as const, t: `服务全部正常 · ${sum.warn} 个警告`, sub: `${w.name}${d != null ? ` 将于 ${d} 天后到期。` : "。"}`, arg: w.id };
     }
-    return { k: "up" as const, ic: "cCheck" as const, t: sum.paused ? `${services.length - sum.paused} services are up · ${sum.paused} paused` : `All ${services.length} services are up`, sub: "Every active check is passing.", arg: undefined };
+    return { k: "up" as const, ic: "cCheck" as const, t: sum.paused ? `${services.length - sum.paused} 个服务正常 · ${sum.paused} 个已暂停` : `全部 ${services.length} 个服务运行正常`, sub: "所有启用的检查均通过。", arg: undefined };
   }, [loading, isEmpty, services, sum, sorted]);
 
   const expiring = useMemo(
@@ -91,10 +91,10 @@ export function Overview({
         <div className="banner" role="alert" style={{ background: "var(--warn-soft)" }}>
           <span style={{ color: "var(--warn)" }}><Icon n="tri" s={20} /></span>
           <div style={{ flex: "1 1 260px", minWidth: 0 }}>
-            <div className="t" style={{ fontSize: 13.5 }}>Can't reach the Worker</div>
-            <div className="s">Showing the last data received. Retrying automatically.</div>
+            <div className="t" style={{ fontSize: 13.5 }}>无法连接 Worker</div>
+            <div className="s">正在显示最后收到的数据，将自动重试。</div>
           </div>
-          <button className="btn t-fast press" onClick={onRefresh}>Retry now</button>
+          <button className="btn t-fast press" onClick={onRefresh}>立即重试</button>
         </div>
       )}
 
@@ -115,14 +115,14 @@ export function Overview({
           </div>
           {banner.arg && (
             <button className="btn t-fast press" style={{ fontWeight: 600 }} onClick={() => onOpen(banner.arg!)}>
-              Open service<Icon n="chevron" s={13} />
+              打开服务<Icon n="chevron" s={13} />
             </button>
           )}
         </div>
       ) : null}
 
       <div className="grid-sum">
-        {([["Up", sum.up, "up"], ["Down", sum.down, "down"], ["Warning", sum.warn, "warn"], ["Paused", sum.paused, "paused"]] as const).map(
+        {([["正常", sum.up, "up"], ["宕机", sum.down, "down"], ["警告", sum.warn, "warn"], ["已暂停", sum.paused, "paused"]] as const).map(
           ([label, val, k]) => {
             const col = val > 0 && (k === "down" || k === "warn") ? statusColor(k) : "var(--fg)";
             return (
@@ -134,7 +134,7 @@ export function Overview({
           }
         )}
         <div className="card sumcard">
-          <div className="lbl" style={{ color: "var(--muted)" }}><Icon n="gauge" s={14} />Fleet uptime 24h</div>
+          <div className="lbl" style={{ color: "var(--muted)" }}><Icon n="gauge" s={14} />全站 24 小时在线率</div>
           <div className="v">{loading || isEmpty ? "-" : sum.fleet}</div>
           <div className="fleetbar"><i style={{ width: loading || sum.fleet === "-" ? 0 : Math.min(100, parseFloat(sum.fleet)) + "%" }} /></div>
         </div>
@@ -142,14 +142,14 @@ export function Overview({
 
       <div className="sec">
         <div className="h">
-          <span className="name">Services</span>
-          <span className="meta">{loading ? "loading" : `${services?.length ?? 0} monitors · ${projectName.toLowerCase()}`}</span>
+          <span className="name">服务</span>
+          <span className="meta">{loading ? "加载中" : `${services?.length ?? 0} 个监控项 · ${projectName}`}</span>
           <div style={{ flex: 1 }} />
-          <button className="btn t-fast press" style={{ padding: "5px 10px" }} onClick={() => setShareOpen(true)} title="Public status page">
-            <Icon n="globe" s={13} style={{ color: isPublic ? "var(--up)" : undefined }} />{isPublic ? "Public" : "Share"}
+          <button className="btn t-fast press" style={{ padding: "5px 10px" }} onClick={() => setShareOpen(true)} title="公开状态页">
+            <Icon n="globe" s={13} style={{ color: isPublic ? "var(--up)" : undefined }} />{isPublic ? "公开" : "分享"}
           </button>
-          <button className="btn t-fast press" style={{ padding: "5px 10px" }} onClick={() => setProjectOpen(true)} title="Rename or delete this project">
-            <Icon n="pencil" s={13} />Project
+          <button className="btn t-fast press" style={{ padding: "5px 10px" }} onClick={() => setProjectOpen(true)} title="重命名或删除此项目">
+            <Icon n="pencil" s={13} />项目
           </button>
         </div>
 
@@ -161,7 +161,7 @@ export function Overview({
             <div className="tscroll">
               <div className="tinner">
                 <div className="trow thead">
-                  <div>SERVICE</div><div>STATUS</div><div>RECENT CHECKS</div><div>UPTIME 24H</div><div>RESPONSE</div><div>CHECKED</div>
+                  <div>服务</div><div>状态</div><div>最近检查</div><div>24 小时在线率</div><div>响应</div><div>上次检查</div>
                 </div>
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="trow srow" aria-hidden="true">
@@ -179,15 +179,15 @@ export function Overview({
         ) : isEmpty ? (
           <div className="empty">
             <div className="ring"><Icon n="radar" s={22} /></div>
-            <h3>No services in {projectName} yet</h3>
-            <p>Add the first monitor and Uptime Guard starts checking within 60 seconds.</p>
-            <button className="btn pri t-fast press" onClick={onAdd}>Add your first service</button>
+            <h3>{projectName} 还没有服务</h3>
+            <p>添加第一个监控项，Uptime Guard 会在 60 秒内开始检查。</p>
+            <button className="btn pri t-fast press" onClick={onAdd}>添加第一个服务</button>
           </div>
         ) : (
           <>
-            <div className="filterbar" role="tablist" aria-label="Filter services by type">
+            <div className="filterbar" role="tablist" aria-label="按类型筛选服务">
               <button role="tab" aria-selected={active === "all"} className={`tabc${active === "all" ? " on" : ""}`} onClick={() => setFilter("all")}>
-                All<span className="fcount">{services?.length ?? 0}</span>
+                全部<span className="fcount">{services?.length ?? 0}</span>
               </button>
               {TYPES.filter(({ type }) => counts[type]).map(({ type, meta }) => (
                 <button key={type} role="tab" aria-selected={active === type} className={`tabc${active === type ? " on" : ""}`} onClick={() => setFilter(type)}>
@@ -198,7 +198,7 @@ export function Overview({
             <div className="tscroll">
               <div className="tinner">
                 <div className="trow thead">
-                  <div>SERVICE</div><div>STATUS</div><div>RECENT CHECKS</div><div>UPTIME 24H</div><div>RESPONSE</div><div>CHECKED</div>
+                  <div>服务</div><div>状态</div><div>最近检查</div><div>24 小时在线率</div><div>响应</div><div>上次检查</div>
                 </div>
                 {pageItems.map((s) => (
                   <ServiceRow key={s.id} s={s} onOpen={onOpen} />
@@ -212,22 +212,22 @@ export function Overview({
             </div>
             {visible.length > PAGE && (
               <div className="pager">
-                <span className="info">{start + 1}–{Math.min(start + PAGE, visible.length)} of {visible.length}</span>
+                <span className="info">第 {start + 1}–{Math.min(start + PAGE, visible.length)} 项 / 共 {visible.length} 项</span>
                 <div style={{ flex: 1 }} />
-                <button className="btn t-fast press" disabled={pageClamped === 0} onClick={() => setPage(pageClamped - 1)} aria-label="Previous page">
+                <button className="btn t-fast press" disabled={pageClamped === 0} onClick={() => setPage(pageClamped - 1)} aria-label="上一页">
                   <Icon n="chevron" s={13} style={{ transform: "rotate(180deg)" }} />
                 </button>
                 <span className="info">{pageClamped + 1} / {pageCount}</span>
-                <button className="btn t-fast press" disabled={pageClamped >= pageCount - 1} onClick={() => setPage(pageClamped + 1)} aria-label="Next page">
+                <button className="btn t-fast press" disabled={pageClamped >= pageCount - 1} onClick={() => setPage(pageClamped + 1)} aria-label="下一页">
                   <Icon n="chevron" s={13} />
                 </button>
               </div>
             )}
             <div className="legend">
-              <span><StatusGlyph k="up" s={13} />Operational</span>
-              <span><StatusGlyph k="warn" s={13} />Warning</span>
-              <span><StatusGlyph k="down" s={13} />Failed check</span>
-              <span><Icon n="dashed" s={13} style={{ color: "var(--faint)" }} />No data</span>
+              <span><StatusGlyph k="up" s={13} />运行正常</span>
+              <span><StatusGlyph k="warn" s={13} />警告</span>
+              <span><StatusGlyph k="down" s={13} />检查失败</span>
+              <span><Icon n="dashed" s={13} style={{ color: "var(--faint)" }} />无数据</span>
             </div>
           </>
         )}
@@ -235,7 +235,7 @@ export function Overview({
 
       {!loading && !isEmpty && expiring.length > 0 && (
         <div className="sec" style={{ maxWidth: 460 }}>
-          <div className="h"><span className="name">Expiring soon</span><span className="meta">within 30 days</span></div>
+          <div className="h"><span className="name">即将到期</span><span className="meta">30 天内</span></div>
           {expiring.map((s) => {
             const d = expiryDays(s);
             const col = d != null && d < 0 ? "var(--down)" : d != null && d <= (s.check_type === "tls" ? 14 : 30) ? "var(--warn)" : "var(--fg)";
@@ -244,10 +244,10 @@ export function Overview({
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{s.name}</div>
                   <div className="mono" style={{ fontSize: 10.5, color: "var(--faint)", marginTop: 2 }}>
-                    {s.check_type === "tls" ? "TLS" : "Registrar"} · {s.expires_at ? fmtDate(s.expires_at) : "-"}
+                    {s.check_type === "tls" ? "TLS" : "注册商"} · {s.expires_at ? fmtDate(s.expires_at) : "-"}
                   </div>
                 </div>
-                <div className="r"><div className="mono" style={{ fontSize: 15, color: col }}>{d != null ? `${d} d` : "-"}</div></div>
+                <div className="r"><div className="mono" style={{ fontSize: 15, color: col }}>{d != null ? `${d} 天` : "-"}</div></div>
               </div>
             );
           })}

@@ -39,14 +39,14 @@ export function LoginGate({ onReady }: { onReady: () => void }) {
             <div className="logo" style={{ width: 26, height: 26, borderRadius: 8 }}><Icon n="shield" s={14} /></div>
             <div className="mono" style={{ fontSize: 12, fontWeight: 500, letterSpacing: ".1em" }}>UPTIME GUARD</div>
           </div>
-          <h1>Sign in</h1>
-          <p className="lead">{demo ? "Live demo - explore with sample data." : "Owner access only. Sessions last 30 days."}</p>
+          <h1>登录</h1>
+          <p className="lead">{demo ? "在线演示 —— 使用示例数据浏览。" : "仅所有者可访问。会话有效期 30 天。"}</p>
 
           {demo && (
             <div style={{ display: "flex", gap: 9, alignItems: "flex-start", padding: "10px 12px", marginBottom: 18, border: "1px solid var(--border)", borderRadius: 9, background: "var(--up-soft)" }}>
               <span style={{ color: "var(--accent)", flex: "none", marginTop: 1 }}><Icon n="info" s={15} /></span>
               <div style={{ fontSize: 12.5, color: "var(--fg)" }}>
-                Demo password is <strong>demo</strong> - no authenticator needed. This instance uses sample data and resets periodically.
+                演示密码为 <strong>demo</strong> —— 无需验证器。此实例使用示例数据，会定期重置。
               </div>
             </div>
           )}
@@ -56,29 +56,29 @@ export function LoginGate({ onReady }: { onReady: () => void }) {
               <div style={{ width: 8, height: 8, background: "var(--down)", borderRadius: "50%", marginTop: 5, flex: "none" }} />
               <div>
                 <div style={{ fontWeight: 600, fontSize: 13 }}>{error}</div>
-                <div style={{ fontSize: 12.5, color: "var(--muted)" }}>Check the 6-digit code is current. Codes rotate every 30 seconds.</div>
+                <div style={{ fontSize: 12.5, color: "var(--muted)" }}>请确认 6 位验证码是否为最新。验证码每 30 秒刷新一次。</div>
               </div>
             </div>
           )}
 
-          <label className="fl">Password</label>
+          <label className="fl">密码</label>
           <input className="inp" type="password" autoFocus value={password} onChange={(e) => setPassword(e.target.value)} style={{ marginBottom: 16 }} />
 
           {!demo && (
             <>
-              <label className="fl">Authenticator code</label>
+              <label className="fl">验证器验证码</label>
               <input className="inp mono" inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} placeholder="000000" style={{ fontSize: 18, letterSpacing: ".26em", marginBottom: 6 }} />
-              <div style={{ fontSize: 12, color: "var(--faint)", marginBottom: 20 }}>6 digits from your authenticator app.</div>
+              <div style={{ fontSize: 12, color: "var(--faint)", marginBottom: 20 }}>验证器 App 中的 6 位数字。</div>
             </>
           )}
 
           <button className="btn pri press" type="submit" disabled={busy} style={{ width: "100%", justifyContent: "center", padding: 11 }}>
-            {busy ? "Signing in…" : "Sign In"}
+            {busy ? "登录中…" : "登录"}
           </button>
 
           <div style={{ marginTop: 18 }}>
             <button type="button" className="mono" onClick={() => setShowAdv((v) => !v)} style={{ padding: 0, border: 0, background: "none", color: "var(--faint)", fontSize: 11, cursor: "pointer", textDecoration: "underline" }}>
-              {showAdv ? "hide worker URL" : "advanced · worker URL"}
+              {showAdv ? "隐藏 Worker 地址" : "高级 · Worker 地址"}
             </button>
             {showAdv && (
               <input className="inp mono" value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} placeholder="https://uptime.you.workers.dev" style={{ marginTop: 10, fontSize: 12.5, padding: "9px 11px" }} />
@@ -87,12 +87,12 @@ export function LoginGate({ onReady }: { onReady: () => void }) {
         </form>
       </div>
       <div className="aside">
-        <div className="mono" style={{ fontSize: 11, color: "var(--faint)", letterSpacing: ".1em" }}>MONITORING WHILE YOU'RE AWAY</div>
+        <div className="mono" style={{ fontSize: 11, color: "var(--faint)", letterSpacing: ".1em" }}>你不在时也在监控</div>
         <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-.02em", lineHeight: 1.5 }}>
-          Uptime Guard keeps checking your servers, sites, certificates and cron jobs on its own.
+          Uptime Guard 会自动持续检查你的服务器、网站、证书和定时任务。
         </div>
         <div style={{ fontSize: 12.5, color: "var(--muted)", maxWidth: "34ch" }}>
-          Telegram alerts fire the moment something goes down, whether or not this dashboard is open.
+          一旦出现宕机，Telegram 告警立即发出 —— 无论面板是否打开。
         </div>
       </div>
     </div>
