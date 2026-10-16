@@ -1,7 +1,7 @@
 {
   "name": "Uptime Guard",
   "short_name": "Vigil",
-  "description": "Self-hosted uptime, TCP, DNS and certificate monitoring with alerts.",
+  "description": "自托管的在线率、TCP、DNS 与证书监控，附带告警通知。",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

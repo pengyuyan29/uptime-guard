@@ -45,15 +45,15 @@ export function ProjectModal({
       <div className="modal" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
         <div className="mh">
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: "-.02em" }}>Project settings</div>
+            <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: "-.02em" }}>项目设置</div>
             <div style={{ fontSize: 12.5, color: "var(--muted)", overflowWrap: "anywhere" }}>{name}</div>
           </div>
-          <button className="iconbtn t-fast" style={{ width: 28, height: 28 }} onClick={onClose} aria-label="Close"><Icon n="x" s={15} /></button>
+          <button className="iconbtn t-fast" style={{ width: 28, height: 28 }} onClick={onClose} aria-label="关闭"><Icon n="x" s={15} /></button>
         </div>
 
         <div style={{ padding: 18, display: "flex", flexDirection: "column", gap: 16 }}>
           <div className="field">
-            <label htmlFor="project-name">Name</label>
+            <label htmlFor="project-name">名称</label>
             <input
               id="project-name"
               className="inp"
@@ -72,15 +72,15 @@ export function ProjectModal({
               onClick={() => setConfirming(true)}
               style={{ alignSelf: "flex-start", color: "var(--down)", borderColor: "var(--down)" }}
             >
-              <Icon n="trash" s={13} />Delete project
+              <Icon n="trash" s={13} />删除项目
             </button>
           ) : (
             <div style={{ padding: 12, border: "1px solid var(--down)", borderRadius: 10, background: "var(--down-soft)", display: "flex", flexDirection: "column", gap: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 600 }}>
-                Delete this project{serviceCount > 0 ? ` and its ${serviceCount} monitor${serviceCount === 1 ? "" : "s"}?` : "?"}
+                删除此项目{serviceCount > 0 ? `及其 ${serviceCount} 个监控项？` : "？"}
               </div>
               <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
-                Incident history and check results go with it. This cannot be undone.
+                故障历史和检查结果将一并删除，此操作无法撤销。
               </div>
               {serviceCount > 0 && (
                 <input
@@ -88,16 +88,16 @@ export function ProjectModal({
                   autoFocus
                   value={typed}
                   disabled={busy}
-                  placeholder={`Type "${name}" to confirm`}
+                  placeholder={`输入 "${name}" 以确认`}
                   onChange={(e) => setTyped(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") remove(); }}
                 />
               )}
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <button className="btn t-fast press" disabled={busy || !canDelete} onClick={remove} style={{ background: "var(--down)", borderColor: "var(--down)", color: "var(--accent-fg)" }}>
-                  {busy ? "Deleting…" : "Delete permanently"}
+                  {busy ? "删除中…" : "永久删除"}
                 </button>
-                <button className="btn t-fast press" disabled={busy} onClick={() => { setConfirming(false); setTyped(""); }}>Cancel</button>
+                <button className="btn t-fast press" disabled={busy} onClick={() => { setConfirming(false); setTyped(""); }}>取消</button>
               </div>
             </div>
           )}
@@ -105,8 +105,8 @@ export function ProjectModal({
 
         <div className="mf">
           <div style={{ flex: 1 }} />
-          <button className="btn t-fast press" disabled={busy} onClick={onClose}>Close</button>
-          <button className="btn pri t-fast press" disabled={busy || !canSave} onClick={save}>{busy ? "Saving…" : "Save name"}</button>
+          <button className="btn t-fast press" disabled={busy} onClick={onClose}>关闭</button>
+          <button className="btn pri t-fast press" disabled={busy || !canSave} onClick={save}>{busy ? "保存中…" : "保存名称"}</button>
         </div>
       </div>
     </div>

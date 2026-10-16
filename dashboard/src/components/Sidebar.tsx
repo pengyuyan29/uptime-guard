@@ -31,8 +31,8 @@ export const Sidebar = memo(function Sidebar({
   onLogout: () => void;
 }) {
   const nav: [Screen, string, IconName][] = [
-    ["overview", "Overview", "dash"],
-    ["settings", "Settings", "settings"],
+    ["overview", "总览", "dash"],
+    ["settings", "设置", "settings"],
   ];
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState("");
@@ -52,11 +52,11 @@ export const Sidebar = memo(function Sidebar({
       <div className="brand">
         <span className="logo"><Icon n="activity" s={13} /></span>
         <b>UPTIME GUARD</b>
-        <button className="iconbtn t-fast side-close" onClick={onClose} aria-label="Close menu"><Icon n="x" s={14} /></button>
+        <button className="iconbtn t-fast side-close" onClick={onClose} aria-label="关闭菜单"><Icon n="x" s={14} /></button>
       </div>
       <div className="lbl">
-        <span>PROJECTS</span>
-        <button className="iconbtn t-fast press" title="New project" onClick={() => setAdding((a) => !a)}><Icon n="plus" s={13} /></button>
+        <span>项目</span>
+        <button className="iconbtn t-fast press" title="新建项目" onClick={() => setAdding((a) => !a)}><Icon n="plus" s={13} /></button>
       </div>
       <div className="plist">
         {adding && (
@@ -65,7 +65,7 @@ export const Sidebar = memo(function Sidebar({
             autoFocus
             value={draft}
             disabled={busy}
-            placeholder="Project name…"
+            placeholder="项目名称…"
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") submit();
@@ -75,7 +75,7 @@ export const Sidebar = memo(function Sidebar({
             style={{ padding: "8px 11px", fontSize: 13, marginBottom: 4 }}
           />
         )}
-        {projects.length === 0 && !adding && <div style={{ padding: "8px 11px", fontSize: 12.5, color: "var(--faint)" }}>No projects yet</div>}
+        {projects.length === 0 && !adding && <div style={{ padding: "8px 11px", fontSize: 12.5, color: "var(--faint)" }}>还没有项目</div>}
         {projects.map((p) => {
           const on = selectedId === p.id && screen === "overview";
           const svcs = servicesByProject[p.id];
@@ -99,8 +99,8 @@ export const Sidebar = memo(function Sidebar({
         ))}
       </nav>
       <div className="foot">
-        <div className="who"><b>owner</b><small>2FA on · 30d session</small></div>
-        <button className="logout t-fast press" onClick={onLogout} title="Log out"><Icon n="logout" s={13} />Log out</button>
+        <div className="who"><b>所有者</b><small>已启用两步验证 · 会话 30 天</small></div>
+        <button className="logout t-fast press" onClick={onLogout} title="退出登录"><Icon n="logout" s={13} />退出登录</button>
       </div>
       </aside>
     </>

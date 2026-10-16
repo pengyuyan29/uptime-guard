@@ -73,13 +73,13 @@ export function SetupGate({ onReady }: { onReady: () => void }) {
           </div>
 
           <div className="mono" style={{ fontSize: 11, color: "var(--faint)", letterSpacing: ".1em", marginBottom: 8 }}>
-            STEP {step} OF 2
+            第 {step} 步 / 共 2 步
           </div>
-          <h1>{step === 1 ? "Create your account" : "Add your authenticator"}</h1>
+          <h1>{step === 1 ? "创建账户" : "绑定验证器"}</h1>
           <p className="lead">
             {step === 1
-              ? "First-time setup - choose an owner password. Next you'll pair an authenticator app, which is required."
-              : "Scan the code in your authenticator app, then confirm the 6 digits it shows. You'll need this at every sign-in."}
+              ? "首次设置 —— 请设置所有者密码。下一步需要绑定验证器 App，此步骤必需。"
+              : "在验证器 App 中扫码，然后输入其显示的 6 位数字确认。之后每次登录都需要。"}
           </p>
 
           {error && (
@@ -91,62 +91,62 @@ export function SetupGate({ onReady }: { onReady: () => void }) {
 
           {step === 1 ? (
             <>
-              <label className="fl">Password</label>
+              <label className="fl">密码</label>
               <input className="inp" type="password" autoFocus value={password} onChange={(e) => setPassword(e.target.value)} style={{ marginBottom: 6 }} />
               <div style={{ fontSize: 12, color: tooShort ? "var(--warn)" : "var(--faint)", marginBottom: 16 }}>
-                At least 8 characters.
+                至少 8 个字符。
               </div>
 
-              <label className="fl">Confirm password</label>
+              <label className="fl">确认密码</label>
               <input className="inp" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} style={{ marginBottom: 6 }} />
               <div style={{ fontSize: 12, color: mismatch ? "var(--down)" : "var(--faint)", marginBottom: 20 }}>
-                {mismatch ? "Passwords don't match." : "Re-enter your password."}
+                {mismatch ? "两次输入的密码不一致。" : "请再次输入密码。"}
               </div>
 
               <button className="btn pri press" type="submit" disabled={busy || !passwordReady} style={{ width: "100%", justifyContent: "center", padding: 11 }}>
-                {busy ? "Preparing…" : "Continue"}
+                {busy ? "准备中…" : "继续"}
               </button>
             </>
           ) : (
             <>
               {totp && (
                 <>
-                  <img src={totp.qr} alt="Authenticator QR code" width={158} height={158} style={{ borderRadius: 10, background: "#fff", padding: 6, marginBottom: 14 }} />
+                  <img src={totp.qr} alt="验证器二维码" width={158} height={158} style={{ borderRadius: 10, background: "#fff", padding: 6, marginBottom: 14 }} />
                   <div style={{ fontSize: 12.5, color: "var(--muted)", marginBottom: 8 }}>
-                    Scan in Google Authenticator / Authy, or enter this key manually:
+                    在 Google Authenticator / Authy 中扫码，或手动输入密钥：
                   </div>
                   <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                     <code className="mono" style={{ flex: 1, minWidth: 0, padding: "8px 10px", border: "1px solid var(--border)", borderRadius: 8, background: "var(--sunken)", fontSize: 12, overflowWrap: "anywhere" }}>{totp.secret}</code>
                     <button type="button" className="btn t-fast press" onClick={() => { navigator.clipboard?.writeText(totp.secret); setCopied(true); setTimeout(() => setCopied(false), 1500); }}>
-                      <Icon n="copy" s={13} />{copied ? "Copied" : "Copy"}
+                      <Icon n="copy" s={13} />{copied ? "已复制" : "复制"}
                     </button>
                   </div>
                   <div style={{ fontSize: 12, color: "var(--warn)", marginBottom: 18 }}>
-                    Keep this key somewhere safe. It is the only way back in if you lose the device.
+                    请妥善保存该密钥。设备丢失时，它是唯一的找回方式。
                   </div>
                 </>
               )}
 
-              <label className="fl">6-digit code</label>
+              <label className="fl">6 位验证码</label>
               <input className="inp mono" inputMode="numeric" maxLength={6} autoFocus value={code} placeholder="000000" onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} style={{ fontSize: 18, letterSpacing: ".26em", marginBottom: 20 }} />
 
               <button className="btn pri press" type="submit" disabled={busy || code.length !== 6} style={{ width: "100%", justifyContent: "center", padding: 11 }}>
-                {busy ? "Creating…" : "Create account & sign in"}
+                {busy ? "创建中…" : "创建账户并登录"}
               </button>
               <button type="button" className="mono" onClick={() => { setStep(1); setError(null); }} style={{ marginTop: 16, padding: 0, border: 0, background: "none", color: "var(--faint)", fontSize: 11, cursor: "pointer", textDecoration: "underline" }}>
-                back to password
+                返回设置密码
               </button>
             </>
           )}
         </form>
       </div>
       <div className="aside">
-        <div className="mono" style={{ fontSize: 11, color: "var(--faint)", letterSpacing: ".1em" }}>WELCOME</div>
+        <div className="mono" style={{ fontSize: 11, color: "var(--faint)", letterSpacing: ".1em" }}>欢迎</div>
         <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-.02em", lineHeight: 1.5 }}>
-          Your Uptime Guard is deployed and ready.
+          你的 Uptime Guard 已部署完成。
         </div>
         <div style={{ fontSize: 12.5, color: "var(--muted)", maxWidth: "34ch" }}>
-          Claim this instance with a password and an authenticator app, then add your first monitor. Everything runs on your own Cloudflare account.
+          用密码和验证器 App 认领此实例，然后添加第一个监控项。一切都在你自己的 Cloudflare 账户上运行。
         </div>
       </div>
     </div>

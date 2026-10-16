@@ -12,7 +12,7 @@ export function ServiceDetailSkeleton({ onBack }: { onBack: () => void }) {
   return (
     <div className="screen">
       <button className="btn t-fast press" style={{ alignSelf: "flex-start" }} onClick={onBack}>
-        <Icon n="chevron" s={13} style={{ transform: "rotate(180deg)" }} />Back to overview
+        <Icon n="chevron" s={13} style={{ transform: "rotate(180deg)" }} />返回总览
       </button>
       <div className="card" style={{ padding: "16px 18px", display: "flex", flexDirection: "column", gap: 11 }}>
         <div className="sk" style={{ width: 220, height: 22 }} />
@@ -28,7 +28,7 @@ export function ServiceDetailSkeleton({ onBack }: { onBack: () => void }) {
         ))}
       </div>
       <div className="sec">
-        <div className="h"><span className="name">Response time</span></div>
+        <div className="h"><span className="name">响应时间</span></div>
         <div style={{ padding: 14 }}><div className="sk" style={{ height: 140, width: "100%" }} /></div>
       </div>
     </div>
@@ -60,17 +60,17 @@ export function ServiceDetail({
   }, [s.id, s.last_checked_at]);
 
   async function checkNow() {
-    setBusy("check"); say("Checking now…");
-    try { await api.checkNow(s.id); onMutated(); say("Check complete"); } catch { say("Check failed"); } finally { setBusy(""); }
+    setBusy("check"); say("正在检查…");
+    try { await api.checkNow(s.id); onMutated(); say("检查完成"); } catch { say("检查失败"); } finally { setBusy(""); }
   }
   async function togglePause() {
     setBusy("pause");
-    try { await api.pauseService(s.id, !s.paused); onMutated(); say(s.paused ? "Monitoring resumed" : "Monitoring paused"); } catch { say("Could not update"); } finally { setBusy(""); }
+    try { await api.pauseService(s.id, !s.paused); onMutated(); say(s.paused ? "已恢复监控" : "已暂停监控"); } catch { say("操作失败"); } finally { setBusy(""); }
   }
   async function del() {
-    if (!confirm(`Delete “${s.name}”? This removes its history too.`)) return;
+    if (!confirm(`删除「${s.name}」？其历史记录也会一并删除。`)) return;
     setBusy("delete");
-    try { await api.deleteService(s.id); say("Service deleted"); onMutated(); onBack(); } catch { say("Delete failed"); setBusy(""); }
+    try { await api.deleteService(s.id); say("服务已删除"); onMutated(); onBack(); } catch { say("删除失败"); setBusy(""); }
   }
 
   const stats = useMemo(() => buildStats(s), [s]);
@@ -79,7 +79,7 @@ export function ServiceDetail({
   return (
     <div className="screen">
       <button className="btn t-fast press" style={{ alignSelf: "flex-start" }} onClick={onBack}>
-        <Icon n="chevron" s={13} style={{ transform: "rotate(180deg)" }} />Back to overview
+        <Icon n="chevron" s={13} style={{ transform: "rotate(180deg)" }} />返回总览
       </button>
 
       <div className="card" style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start", padding: "16px 18px" }}>
@@ -95,17 +95,17 @@ export function ServiceDetail({
         <div className="detail-actions" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {!isHb && (
             <button className="btn pri t-fast press" onClick={checkNow} disabled={busy === "check"}>
-              <Icon n="zap" s={13} />{busy === "check" ? "Checking…" : "Check now"}
+              <Icon n="zap" s={13} />{busy === "check" ? "检查中…" : "立即检查"}
             </button>
           )}
           <button className="btn t-fast press" onClick={togglePause} disabled={busy === "pause"}>
-            <Icon n={s.paused ? "play" : "pause"} s={13} />{s.paused ? "Resume" : "Pause"}
+            <Icon n={s.paused ? "play" : "pause"} s={13} />{s.paused ? "恢复" : "暂停"}
           </button>
           <button className="btn t-fast press" onClick={() => onEdit(s)}>
-            <Icon n="pencil" s={13} />Edit
+            <Icon n="pencil" s={13} />编辑
           </button>
           <button className="btn danger t-fast press" onClick={del} disabled={busy === "delete"}>
-            <Icon n="trash" s={13} />Delete
+            <Icon n="trash" s={13} />删除
           </button>
         </div>
       </div>
@@ -122,12 +122,12 @@ export function ServiceDetail({
 
       <div className="sec">
         <div className="h">
-          <span className="name">Uptime &amp; reliability</span>
+          <span className="name">在线率与可靠性</span>
           <div style={{ flex: 1 }} />
-          {sla?.mttr_ms != null && <span className="meta">avg recovery {fmtDuration(sla.mttr_ms)}</span>}
+          {sla?.mttr_ms != null && <span className="meta">平均恢复 {fmtDuration(sla.mttr_ms)}</span>}
         </div>
         <div className="slagrid">
-          {([["24 hours", "h24"], ["7 days", "d7"], ["30 days", "d30"], ["90 days", "d90"]] as const).map(([label, key]) => {
+          {([["24 小时", "h24"], ["7 天", "d7"], ["30 天", "d30"], ["90 天", "d90"]] as const).map(([label, key]) => {
             const v = sla ? sla.uptime[key] : undefined;
             return (
               <div key={key} className="slacell">
@@ -143,11 +143,11 @@ export function ServiceDetail({
 
       {!isHb && s.check_type !== "tls" && s.check_type !== "domain" && (
         <div className="sec">
-          <div className="h"><span className="name">Recent checks</span><div style={{ flex: 1 }} /><span className="meta">last {Math.min((s.recent ?? []).length, 40)}</span></div>
+          <div className="h"><span className="name">最近检查</span><div style={{ flex: 1 }} /><span className="meta">最近 {Math.min((s.recent ?? []).length, 40)} 次</span></div>
           <div style={{ padding: "16px 14px 12px" }}>
             <HeartbeatBars beats={beats(s)} big />
             <div className="mono" style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 10.5, color: "var(--faint)" }}>
-              <span>older</span><span>now</span>
+              <span>更早</span><span>现在</span>
             </div>
           </div>
         </div>
@@ -160,9 +160,9 @@ export function ServiceDetail({
       {s.check_type === "script" && (
         <div className="sec">
           <div className="h">
-            <span className="name">Script</span>
+            <span className="name">脚本</span>
             <div style={{ flex: 1 }} />
-            <span className="meta">runs top to bottom on every check</span>
+            <span className="meta">每次检查自上而下执行</span>
           </div>
           <div style={{ padding: 14 }}>
             <pre className="mono" style={{ margin: 0, padding: "11px 12px", border: "1px solid var(--border)", borderRadius: 8, background: "var(--sunken)", fontSize: 12, lineHeight: 1.6, color: "var(--fg)", overflowX: "auto" }}>
@@ -174,22 +174,22 @@ export function ServiceDetail({
 
       {isHb && s.heartbeat_token && (
         <div className="sec">
-          <div className="h"><span className="name">Ping URL</span></div>
+          <div className="h"><span className="name">Ping 地址</span></div>
           <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 12 }}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
               <code className="mono" style={{ flex: "1 1 320px", minWidth: 0, padding: "9px 11px", border: "1px solid var(--border)", borderRadius: 8, background: "var(--sunken)", fontSize: 12, overflowWrap: "anywhere" }}>{pingUrl}</code>
               <button className="btn t-fast press" style={{ fontWeight: 600 }} onClick={() => { navigator.clipboard?.writeText(pingUrl); setCopied(true); setTimeout(() => setCopied(false), 1600); }}>
-                <Icon n="copy" s={13} />{copied ? "Copied" : "Copy"}
+                <Icon n="copy" s={13} />{copied ? "已复制" : "复制"}
               </button>
             </div>
             <div>
-              <div className="eyebrow" style={{ marginBottom: 6 }}>ADD TO YOUR CRON JOB</div>
+              <div className="eyebrow" style={{ marginBottom: 6 }}>添加到你的定时任务</div>
               <pre className="mono" style={{ margin: 0, padding: "11px 12px", border: "1px solid var(--border)", borderRadius: 8, background: "var(--sunken)", fontSize: 12, color: "var(--muted)", overflowX: "auto" }}>
 {`your-job.sh && curl -fsS -m 10 \\\n  ${pingUrl}`}
               </pre>
             </div>
             <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
-              Call this from your cron job on every successful run. If no ping arrives within the grace window, Uptime Guard marks it down and alerts you on Telegram.
+              在定时任务每次成功运行后调用该地址。若宽限期内未收到 Ping，Uptime Guard 会将其标记为宕机并通过 Telegram 提醒你。
             </div>
           </div>
         </div>
@@ -197,14 +197,14 @@ export function ServiceDetail({
 
       <div className="sec">
         <div className="h">
-          <span className="name">Incident history</span>
+          <span className="name">故障历史</span>
           <div style={{ flex: 1 }} />
-          {sla && <span className="meta">{sla.incidents_90d} in 90 days</span>}
+          {sla && <span className="meta">90 天内 {sla.incidents_90d} 次</span>}
         </div>
         {sla == null ? (
           <div style={{ padding: 14 }}><div className="sk" style={{ width: 220 }} /></div>
         ) : sla.incidents.length === 0 ? (
-          <div style={{ padding: 14, fontSize: 12.5, color: "var(--muted)" }}>No incidents recorded - nothing has gone down.</div>
+          <div style={{ padding: 14, fontSize: 12.5, color: "var(--muted)" }}>暂无故障记录 —— 从未宕机。</div>
         ) : (
           sla.incidents.map((inc) => {
             const ongoing = inc.resolved_at == null;
@@ -213,7 +213,7 @@ export function ServiceDetail({
               <div key={inc.id} className="incrow">
                 <span className="dot" style={{ background: ongoing ? "var(--down)" : "var(--faint)" }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: ongoing ? "var(--down)" : "var(--fg)" }}>{ongoing ? "Ongoing outage" : "Resolved"}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: ongoing ? "var(--down)" : "var(--fg)" }}>{ongoing ? "故障进行中" : "已恢复"}</div>
                   <div className="mono" style={{ fontSize: 11, color: "var(--faint)", marginTop: 2 }}>
                     {fmtDateTime(inc.started_at)}{ongoing ? "" : ` → ${fmtDateTime(inc.resolved_at!)}`}
                   </div>
@@ -226,23 +226,23 @@ export function ServiceDetail({
       </div>
 
       <div className="sec">
-        <div className="h"><span className="name">Recent events</span></div>
+        <div className="h"><span className="name">最近事件</span></div>
         <div className="tscroll">
           <div style={{ minWidth: 560 }}>
             <div style={{ display: "grid", gridTemplateColumns: "92px 150px 1fr", gap: 12, padding: "8px 14px", borderBottom: "1px solid var(--border)" }} className="mono">
-              {["EVENT", "WHEN", "DETAIL"].map((h) => <div key={h} style={{ fontSize: 10, letterSpacing: ".1em", color: "var(--faint)" }}>{h}</div>)}
+              {["事件", "时间", "详情"].map((h) => <div key={h} style={{ fontSize: 10, letterSpacing: ".1em", color: "var(--faint)" }}>{h}</div>)}
             </div>
             {checks == null ? (
               <div style={{ padding: 14 }}><div className="sk" style={{ width: 220 }} /></div>
             ) : checks.length === 0 ? (
-              <div style={{ padding: 14, fontSize: 12.5, color: "var(--muted)" }}>No checks recorded yet.</div>
+              <div style={{ padding: 14, fontSize: 12.5, color: "var(--muted)" }}>暂无检查记录。</div>
             ) : (
               checks.slice(0, 15).map((c) => (
                 <div key={c.id} style={{ display: "grid", gridTemplateColumns: "92px 150px 1fr", gap: 12, padding: "11px 14px", borderBottom: "1px solid var(--border)", alignItems: "center" }}>
-                  <div><Pill k={c.status === "down" ? (checkLabel(s.check_type, c.status, c.error) === "Expiring" ? "warn" : "down") : "up"} label={checkLabel(s.check_type, c.status, c.error)} /></div>
+                  <div><Pill k={c.status === "down" ? (checkLabel(s.check_type, c.status, c.error) === "即将到期" ? "warn" : "down") : "up"} label={checkLabel(s.check_type, c.status, c.error)} /></div>
                   <div className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>{new Date(c.checked_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
                   <div style={{ fontSize: 12.5, color: "var(--muted)", overflowWrap: "anywhere" }}>
-                    {c.error ? c.error : c.status === "up" ? `OK${c.response_time_ms != null ? ` in ${c.response_time_ms} ms` : ""}${c.status_code ? ` · HTTP ${c.status_code}` : ""}` : "Failed check"}
+                    {c.error ? c.error : c.status === "up" ? `正常${c.response_time_ms != null ? ` · ${c.response_time_ms} ms` : ""}${c.status_code ? ` · HTTP ${c.status_code}` : ""}` : "检查失败"}
                   </div>
                 </div>
               ))
@@ -265,13 +265,13 @@ function uptimeColor(v: number): string {
 }
 function fmtDuration(ms: number): string {
   const s = Math.round(ms / 1000);
-  if (s < 60) return `${s}s`;
+  if (s < 60) return `${s} 秒`;
   const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m`;
+  if (m < 60) return `${m} 分钟`;
   const h = Math.floor(m / 60), rm = m % 60;
-  if (h < 24) return rm ? `${h}h ${rm}m` : `${h}h`;
+  if (h < 24) return rm ? `${h} 小时 ${rm} 分钟` : `${h} 小时`;
   const d = Math.floor(h / 24), rh = h % 24;
-  return rh ? `${d}d ${rh}h` : `${d}d`;
+  return rh ? `${d} 天 ${rh} 小时` : `${d} 天`;
 }
 function fmtDateTime(ts: number): string {
   return new Date(ts).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -279,14 +279,14 @@ function fmtDateTime(ts: number): string {
 
 function sinceLine(s: Service): string {
   const k = statusOf(s);
-  if (s.paused) return `Paused · last checked ${timeAgo(s.last_checked_at)}`;
+  if (s.paused) return `已暂停 · 上次检查 ${timeAgo(s.last_checked_at)}`;
   if ((s.check_type === "tls" || s.check_type === "domain") && s.expires_at != null) {
     const d = expiryDays(s);
-    return `${labelOf(s) ?? "Valid"} · expires ${fmtDate(s.expires_at)}${d != null && d >= 0 ? ` (${d} days)` : ""}`;
+    return `${labelOf(s) ?? "有效"} · ${fmtDate(s.expires_at)} 到期${d != null && d >= 0 ? `（${d} 天后）` : ""}`;
   }
-  if (k === "down") return `${labelOf(s) ?? "Down"} · last checked ${timeAgo(s.last_checked_at)}`;
-  if (s.check_type === "heartbeat") return `Last ping ${timeAgo(s.last_ping_at)}`;
-  return `Up · last checked ${timeAgo(s.last_checked_at)}`;
+  if (k === "down") return `${labelOf(s) ?? "宕机"} · 上次检查 ${timeAgo(s.last_checked_at)}`;
+  if (s.check_type === "heartbeat") return `上次 Ping ${timeAgo(s.last_ping_at)}`;
+  return `正常 · 上次检查 ${timeAgo(s.last_checked_at)}`;
 }
 
 function buildStats(s: Service): { label: string; value: string; sub: string; color: string }[] {
@@ -295,33 +295,33 @@ function buildStats(s: Service): { label: string; value: string; sub: string; co
     const d = expiryDays(s);
     const warn = Number(cfg(s).warn_days ?? (s.check_type === "tls" ? 14 : 30));
     return [
-      { label: "Days to expiry", value: d != null ? String(d) : "-", sub: s.expires_at ? fmtDate(s.expires_at) : "-", color: d != null && d <= warn ? "var(--warn)" : "var(--fg)" },
-      { label: s.check_type === "tls" ? "Handshake" : "Lookup", value: s.avg_response_ms != null ? s.avg_response_ms + " ms" : "-", sub: "last check", color: "var(--fg)" },
-      { label: "Warn window", value: warn + " d", sub: "before expiry", color: "var(--fg)" },
-      { label: "Checked", value: timeAgo(s.last_checked_at), sub: "runs daily", color: "var(--fg)" },
+      { label: "距到期", value: d != null ? String(d) : "-", sub: s.expires_at ? fmtDate(s.expires_at) : "-", color: d != null && d <= warn ? "var(--warn)" : "var(--fg)" },
+      { label: s.check_type === "tls" ? "握手耗时" : "查询耗时", value: s.avg_response_ms != null ? s.avg_response_ms + " ms" : "-", sub: "上次检查", color: "var(--fg)" },
+      { label: "提前预警窗口", value: warn + " 天", sub: "到期之前", color: "var(--fg)" },
+      { label: "上次检查", value: timeAgo(s.last_checked_at), sub: "每天运行", color: "var(--fg)" },
     ];
   }
   if (s.check_type === "heartbeat") {
     const grace = Number(cfg(s).grace_seconds ?? s.interval_seconds * 2);
     return [
-      { label: "Last ping", value: timeAgo(s.last_ping_at), sub: s.last_ping_at ? new Date(s.last_ping_at).toLocaleTimeString() : "-", color: k === "down" ? "var(--down)" : "var(--up)" },
-      { label: "Uptime 24h", value: uptimePct(s), sub: "rolling window", color: "var(--fg)" },
-      { label: "Expected every", value: fmtDur(s.interval_seconds), sub: `${fmtDur(grace)} grace`, color: "var(--fg)" },
-      { label: "Checks 24h", value: String(s.checks_24h ?? 0), sub: "pings received", color: "var(--fg)" },
+      { label: "上次 Ping", value: timeAgo(s.last_ping_at), sub: s.last_ping_at ? new Date(s.last_ping_at).toLocaleTimeString() : "-", color: k === "down" ? "var(--down)" : "var(--up)" },
+      { label: "24 小时在线率", value: uptimePct(s), sub: "滚动窗口", color: "var(--fg)" },
+      { label: "预期间隔", value: fmtDur(s.interval_seconds), sub: `宽限期 ${fmtDur(grace)}`, color: "var(--fg)" },
+      { label: "24 小时 Ping 数", value: String(s.checks_24h ?? 0), sub: "收到次数", color: "var(--fg)" },
     ];
   }
   return [
-    { label: "Response now", value: respMs(s), sub: k === "down" ? "no response" : "avg 24h", color: k === "down" ? "var(--down)" : "var(--fg)" },
-    { label: "Uptime 24h", value: uptimePct(s), sub: "rolling window", color: k === "down" ? "var(--down)" : "var(--fg)" },
-    { label: "Interval", value: fmtDur(s.interval_seconds), sub: "cron every 60s", color: "var(--fg)" },
-    { label: "Checks 24h", value: String(s.checks_24h ?? 0), sub: "in last day", color: "var(--fg)" },
+    { label: "当前响应", value: respMs(s), sub: k === "down" ? "无响应" : "24 小时平均", color: k === "down" ? "var(--down)" : "var(--fg)" },
+    { label: "24 小时在线率", value: uptimePct(s), sub: "滚动窗口", color: k === "down" ? "var(--down)" : "var(--fg)" },
+    { label: "检查间隔", value: fmtDur(s.interval_seconds), sub: "每 60 秒调度", color: "var(--fg)" },
+    { label: "24 小时检查数", value: String(s.checks_24h ?? 0), sub: "过去一天", color: "var(--fg)" },
   ];
 }
 function fmtDur(sec: number): string {
-  if (sec % 86400 === 0) return sec / 86400 + " d";
-  if (sec % 3600 === 0) return sec / 3600 + " h";
-  if (sec % 60 === 0) return sec / 60 + " min";
-  return sec + " s";
+  if (sec % 86400 === 0) return sec / 86400 + " 天";
+  if (sec % 3600 === 0) return sec / 3600 + " 小时";
+  if (sec % 60 === 0) return sec / 60 + " 分钟";
+  return sec + " 秒";
 }
 
 function ResponseChart({ checks }: { checks: Check[] | null }) {
@@ -352,15 +352,15 @@ function ResponseChart({ checks }: { checks: Check[] | null }) {
 
   return (
     <div className="sec">
-      <div className="h"><span className="name">Response time</span></div>
+      <div className="h"><span className="name">响应时间</span></div>
       <div style={{ padding: 14 }}>
         {checks == null ? (
           <div className="sk" style={{ height: 140, width: "100%" }} />
         ) : !chart ? (
-          <div style={{ fontSize: 12.5, color: "var(--muted)", padding: "40px 0", textAlign: "center" }}>Not enough data yet.</div>
+          <div style={{ fontSize: 12.5, color: "var(--muted)", padding: "40px 0", textAlign: "center" }}>数据不足，暂无图表。</div>
         ) : (
           <>
-            <svg viewBox="0 0 620 176" style={{ width: "100%", height: "auto", display: "block", overflow: "visible" }} role="img" aria-label="Response time">
+            <svg viewBox="0 0 620 176" style={{ width: "100%", height: "auto", display: "block", overflow: "visible" }} role="img" aria-label="响应时间">
               {chart.ticks.map((t, i) => (
                 <g key={i}>
                   <line x1="42" x2="616" y1={t.y} y2={t.y} stroke="var(--border)" />
@@ -370,7 +370,7 @@ function ResponseChart({ checks }: { checks: Check[] | null }) {
               <path d={chart.line} fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
             </svg>
             <div className="mono" style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 6, fontSize: 10.5, color: "var(--faint)" }}>
-              <span>AVG {chart.avg}</span><span>P95 {chart.p95}</span><span>MAX {chart.max}</span>
+              <span>平均 {chart.avg}</span><span>P95 {chart.p95}</span><span>最大 {chart.max}</span>
             </div>
           </>
         )}

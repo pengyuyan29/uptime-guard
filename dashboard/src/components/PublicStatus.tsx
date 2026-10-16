@@ -7,7 +7,7 @@ const COLOR: Record<string, string> = {
   up: "var(--up)", down: "var(--down)", warn: "var(--warn)",
 };
 const LABEL: Record<string, string> = {
-  up: "Operational", down: "Down", warn: "Warning",
+  up: "运行正常", down: "宕机", warn: "警告",
 };
 
 function fmtPct(v: number | null): string {
@@ -32,8 +32,8 @@ export function PublicStatus({ slug }: { slug: string }) {
       <div className="pubwrap">
         <div className="pubcard" style={{ textAlign: "center", padding: 48 }}>
           <div className="ring" style={{ margin: "0 auto 14px" }}><Icon n="radar" s={22} /></div>
-          <h1 style={{ fontSize: 18, margin: 0 }}>Status page not found</h1>
-          <p style={{ color: "var(--muted)", fontSize: 13.5, marginTop: 8 }}>This status page is unavailable or has been made private.</p>
+          <h1 style={{ fontSize: 18, margin: 0 }}>状态页不存在</h1>
+          <p style={{ color: "var(--muted)", fontSize: 13.5, marginTop: 8 }}>该状态页不可用或已设为私密。</p>
         </div>
       </div>
     );
@@ -41,11 +41,11 @@ export function PublicStatus({ slug }: { slug: string }) {
 
   const ok = data?.summary.operational;
   const headColor = !data ? "var(--faint)" : ok ? "var(--up)" : data.summary.down > 0 ? "var(--down)" : "var(--warn)";
-  const headText = !data ? "Loading…" : ok
-    ? "All systems operational"
+  const headText = !data ? "加载中…" : ok
+    ? "所有系统运行正常"
     : data.summary.down > 0
-      ? `${data.summary.down} ${data.summary.down === 1 ? "service is" : "services are"} down`
-      : `${data.summary.warn} warning${data.summary.warn === 1 ? "" : "s"}`;
+      ? `${data.summary.down} 个服务宕机`
+      : `${data.summary.warn} 个警告`;
 
   return (
     <div className="pubwrap">
@@ -68,7 +68,7 @@ export function PublicStatus({ slug }: { slug: string }) {
               <div key={i} className="pubrow"><div className="sk" style={{ width: 160 + (i % 3) * 30, height: 14 }} /><div style={{ flex: 1 }} /><div className="sk" style={{ width: 60, height: 14 }} /></div>
             ))
           ) : data.services.length === 0 ? (
-            <div className="pubrow" style={{ color: "var(--muted)", fontSize: 13 }}>No monitored services.</div>
+            <div className="pubrow" style={{ color: "var(--muted)", fontSize: 13 }}>暂无监控中的服务。</div>
           ) : (
             data.services.map((s, i) => (
               <div key={i} className="pubrow">
@@ -80,7 +80,7 @@ export function PublicStatus({ slug }: { slug: string }) {
                 <div style={{ flex: 1 }} />
                 <div style={{ textAlign: "right", flex: "none" }}>
                   <div style={{ fontSize: 12.5, fontWeight: 600, color: COLOR[s.status] ?? "var(--fg)" }}>{LABEL[s.status] ?? "-"}</div>
-                  <div className="mono" style={{ fontSize: 10.5, color: "var(--faint)", marginTop: 1 }}>{fmtPct(s.uptime_90d)} · 90d</div>
+                  <div className="mono" style={{ fontSize: 10.5, color: "var(--faint)", marginTop: 1 }}>{fmtPct(s.uptime_90d)} · 90 天</div>
                 </div>
               </div>
             ))
@@ -88,7 +88,7 @@ export function PublicStatus({ slug }: { slug: string }) {
         </div>
 
         <div style={{ textAlign: "center", marginTop: 18, fontSize: 11.5, color: "var(--faint)" }}>
-          {data ? `Updated ${new Date(data.updated_at).toLocaleTimeString()} · ` : ""}Monitored by Uptime Guard
+          {data ? `${new Date(data.updated_at).toLocaleTimeString()} 更新 · ` : ""}由 Uptime Guard 监控
         </div>
       </div>
     </div>

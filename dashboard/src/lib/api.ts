@@ -144,11 +144,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   });
   if (res.status === 401) {
     clearToken();
-    throw new AuthError("session expired, please log in again");
+    throw new AuthError("会话已过期，请重新登录");
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? `Request failed: ${res.status}`);
+    throw new Error(body.error ?? `请求失败：${res.status}`);
   }
   return res.json() as Promise<T>;
 }
@@ -169,7 +169,7 @@ export async function setupTotpNew(baseUrl: string): Promise<{ secret: string; o
   const res = await fetch(`${baseUrl}/api/setup/totp-new`);
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? "Could not start authenticator setup");
+    throw new Error(body.error ?? "无法开始验证器设置");
   }
   return (await res.json()) as { secret: string; otpauth: string };
 }
@@ -201,7 +201,7 @@ export async function setupAccount(
 /** Public status page - no auth, same-origin relative fetch. */
 export async function getPublicStatus(slug: string): Promise<PublicStatusData> {
   const res = await fetch(`/api/public/status/${encodeURIComponent(slug)}`);
-  if (!res.ok) throw new Error(res.status === 404 ? "not found" : `Request failed: ${res.status}`);
+  if (!res.ok) throw new Error(res.status === 404 ? "状态页不存在" : `请求失败：${res.status}`);
   return res.json() as Promise<PublicStatusData>;
 }
 

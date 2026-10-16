@@ -197,13 +197,13 @@ export default function App() {
 
   async function toggleNotify() {
     if (notify) { setNotify(false); disablePush().catch(() => {}); return; }
-    if (typeof Notification === "undefined") { say("Notifications aren't supported here"); return; }
-    if (Notification.permission === "denied") { say("Notifications are blocked in your browser"); return; }
+    if (typeof Notification === "undefined") { say("当前环境不支持通知"); return; }
+    if (Notification.permission === "denied") { say("通知已被浏览器阻止"); return; }
     const perm = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
-    if (perm !== "granted") { say("Notification permission not granted"); return; }
+    if (perm !== "granted") { say("未获得通知权限"); return; }
     setNotify(true);
-    try { await enablePush(); say("Desktop notifications on · even when closed"); }
-    catch { say("Desktop notifications on"); }
+    try { await enablePush(); say("桌面通知已开启 · 关闭应用也能收到"); }
+    catch { say("桌面通知已开启"); }
   }
 
   async function setPublic(makePublic: boolean) {
@@ -211,9 +211,9 @@ export default function App() {
     try {
       const updated = await api.setProjectPublic(project.id, makePublic);
       setProjects((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-      say(makePublic ? "Public status page enabled" : "Public status page disabled");
+      say(makePublic ? "公开状态页已开启" : "公开状态页已关闭");
     } catch {
-      say("Could not update the status page");
+      say("无法更新状态页");
     }
   }
 
@@ -222,9 +222,9 @@ export default function App() {
     try {
       const updated = await api.renameProject(project.id, name);
       setProjects((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-      say(`Renamed to “${updated.name}”`);
+      say(`已重命名为「${updated.name}」`);
     } catch {
-      say("Could not rename the project");
+      say("重命名项目失败");
     }
   }
 
@@ -237,9 +237,9 @@ export default function App() {
       setProjects(rest);
       // Land on whatever project is left, or the empty state.
       navigate({ projectId: rest[0]?.id ?? null, serviceId: null, screen: "overview" }, true);
-      say("Project deleted");
+      say("项目已删除");
     } catch {
-      say("Could not delete the project");
+      say("删除项目失败");
     }
   }
 
@@ -248,9 +248,9 @@ export default function App() {
       const p = await api.createProject(name);
       setProjects((prev) => [p, ...prev]);
       navigate({ projectId: p.id, serviceId: null, screen: "overview" });
-      say(`Project “${p.name}” created`);
+      say(`项目「${p.name}」已创建`);
     } catch {
-      say("Could not create project");
+      say("创建项目失败");
     }
   }
 
@@ -264,10 +264,10 @@ export default function App() {
   }
 
   const crumb =
-    screen === "detail" ? (project?.name ?? "").toUpperCase() + " / SERVICE"
-    : screen === "settings" ? "OWNER"
-    : (project?.name ?? "-").toUpperCase() + (services ? ` / ${services.length} SERVICES` : "");
-  const title = screen === "detail" ? (selected?.name ?? "Service") : screen === "settings" ? "Settings" : project?.name ?? "Uptime Guard";
+    screen === "detail" ? (project?.name ?? "").toUpperCase() + " / 服务详情"
+    : screen === "settings" ? "所有者"
+    : (project?.name ?? "-").toUpperCase() + (services ? ` / ${services.length} 个服务` : "");
+  const title = screen === "detail" ? (selected?.name ?? "服务") : screen === "settings" ? "设置" : project?.name ?? "Uptime Guard";
 
   return (
     <div className="app">
@@ -304,7 +304,7 @@ export default function App() {
                 services={services}
                 loading={svc.loading}
                 error={svc.error}
-                projectName={project?.name ?? "this project"}
+                projectName={project?.name ?? "此项目"}
                 onOpen={(id) => navigate({ screen: "detail", serviceId: id })}
                 onAdd={() => { setEditTarget(null); setAddOpen(true); }}
                 onRefresh={svc.refresh}
@@ -353,7 +353,7 @@ export default function App() {
       {addOpen && projectId && (
         <AddServiceModal
           projectId={projectId}
-          projectName={project?.name ?? "project"}
+          projectName={project?.name ?? "项目"}
           edit={editTarget}
           onClose={() => { setAddOpen(false); setEditTarget(null); }}
           onCreated={() => { setAddOpen(false); setEditTarget(null); svc.refresh(); }}
