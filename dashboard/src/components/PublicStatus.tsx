@@ -4,10 +4,13 @@ import { Icon } from "./Icon";
 import { typeMeta } from "../lib/derive";
 
 const COLOR: Record<string, string> = {
-  up: "var(--up)", down: "var(--down)", warn: "var(--warn)",
+  up: "var(--up)", down: "var(--down)", warn: "var(--warn)", cf_protected: "var(--cf)",
+};
+const SOFT: Record<string, string> = {
+  up: "var(--up-soft)", down: "var(--down-soft)", warn: "var(--warn-soft)", cf_protected: "var(--cf-soft)",
 };
 const LABEL: Record<string, string> = {
-  up: "运行正常", down: "宕机", warn: "警告",
+  up: "运行正常", down: "宕机", warn: "警告", cf_protected: "CF 防护",
 };
 
 function fmtPct(v: number | null): string {
@@ -41,11 +44,25 @@ export function PublicStatus({ slug }: { slug: string }) {
 
   const ok = data?.summary.operational;
   const headColor = !data ? "var(--faint)" : ok ? "var(--up)" : data.summary.down > 0 ? "var(--down)" : "var(--warn)";
+  const headBg = !data ? "var(--sunken)" : ok ? "var(--up-soft)" : data.summary.down > 0 ? "var(--down-soft)" : "var(--warn-soft)";
   const headText = !data ? "加载中…" : ok
     ? "所有系统运行正常"
     : data.summary.down > 0
       ? `${data.summary.down} 个服务宕机`
       : `${data.summary.warn} 个警告`;
+
+  const uptimeBar = (v: number | null) => {
+    const pct = v == null ? 0 : Math.min(100, Math.max(0, v));
+    const col = pct >= 99.9 ? "var(--up)" : pct >= 99 ? "var(--warn)" : "var(--down)";
+    return (
+      <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ flex: 1, height: 3, borderRadius: 2, background: "var(--sunken)", overflow: "hidden" }}>
+          <div style={{ width: `${pct}%`, height: "100%", background: col, borderRadius: 2, transition: "width .6s var(--ease)" }} />
+        </div>
+        <span className="mono" style={{ fontSize: 10.5, color: "var(--faint)", flex: "none" }}>{fmtPct(v)}</span>
+      </div>
+    );
+  };
 
   return (
     <div className="pubwrap">
@@ -57,9 +74,15 @@ export function PublicStatus({ slug }: { slug: string }) {
           </div>
         </div>
 
-        <div className="pubcard pubhead" style={{ borderColor: headColor }}>
-          <span style={{ width: 12, height: 12, borderRadius: "50%", background: headColor, flex: "none", boxShadow: `0 0 0 4px color-mix(in oklch, ${headColor} 22%, transparent)` }} />
-          <div style={{ fontSize: 17, fontWeight: 600, letterSpacing: "-.02em" }}>{headText}</div>
+        <div style={{
+          display: "flex", alignItems: "center", gap: 13, padding: "18px 22px", borderRadius: 14, border: `1px solid ${headColor}`,
+          background: headBg, marginBottom: 14,
+        }}>
+          <span style={{
+            width: 14, height: 14, borderRadius: "50%", background: headColor, flex: "none",
+            boxShadow: `0 0 0 5px color-mix(in oklch, ${headColor} 18%, transparent), 0 0 16px color-mix(in oklch, ${headColor} 30%, transparent)`,
+          }} />
+          <div style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-.025em" }}>{headText}</div>
         </div>
 
         <div className="pubcard" style={{ padding: 0, marginTop: 14 }}>
@@ -71,16 +94,28 @@ export function PublicStatus({ slug }: { slug: string }) {
             <div className="pubrow" style={{ color: "var(--muted)", fontSize: 13 }}>暂无监控中的服务。</div>
           ) : (
             data.services.map((s, i) => (
-              <div key={i} className="pubrow">
-                <span style={{ width: 9, height: 9, borderRadius: "50%", background: COLOR[s.status] ?? "var(--faint)", flex: "none" }} />
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</div>
-                  <div className="mono" style={{ fontSize: 10.5, color: "var(--faint)", marginTop: 1 }}>{typeMeta(s.type).badge}</div>
+              <div key={i} className="pubrow" style={{ padding: "18px 22px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: "1 1 200px" }}>
+                  <span style={{
+                    width: 10, height: 10, borderRadius: "50%", background: COLOR[s.status] ?? "var(--faint)", flex: "none",
+                    boxShadow: `0 0 0 4px color-mix(in oklch, ${COLOR[s.status] ?? "var(--faint)"} 20%, transparent)`,
+                  }} />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</div>
+                    <div className="mono" style={{ fontSize: 10.5, color: "var(--faint)", marginTop: 1 }}>{typeMeta(s.type).badge}</div>
+                  </div>
                 </div>
-                <div style={{ flex: 1 }} />
-                <div style={{ textAlign: "right", flex: "none" }}>
-                  <div style={{ fontSize: 12.5, fontWeight: 600, color: COLOR[s.status] ?? "var(--fg)" }}>{LABEL[s.status] ?? "-"}</div>
-                  <div className="mono" style={{ fontSize: 10.5, color: "var(--faint)", marginTop: 1 }}>{fmtPct(s.uptime_90d)} · 90 天</div>
+                <div style={{ flex: "1 1 240px", minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                    <span style={{
+                      fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 8,
+                      background: SOFT[s.status] ?? "var(--surface-2)", color: COLOR[s.status] ?? "var(--fg)",
+                    }}>
+                      {LABEL[s.status] ?? "-"}
+                    </span>
+                    <span className="mono" style={{ fontSize: 11, color: "var(--faint)" }}>90 天在线率</span>
+                  </div>
+                  {uptimeBar(s.uptime_90d)}
                 </div>
               </div>
             ))

@@ -40,7 +40,7 @@ export const HeartbeatBars = memo(function HeartbeatBars({ beats, big }: { beats
           onMouseEnter={(e) => show(e, b)}
           style={{
             height: H[b.kind],
-            background: b.kind === "blank" ? "var(--border)" : `var(--${b.kind})`,
+            background: b.kind === "blank" ? "var(--border)" : `linear-gradient(180deg, var(--${b.kind}) 0%, var(--${b.kind}-grad) 100%)`,
             animationDelay: `${i * 8}ms`,
             cursor: b.tip ? "pointer" : undefined,
           }}
